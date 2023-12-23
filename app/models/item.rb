@@ -1,6 +1,5 @@
-class TodoList < ApplicationRecord
+class Item < ApplicationRecord
   validates :name, presence: true
   validates :name, uniqueness: true
-  belongs_to :user
-  has_many :items
+  belongs_to :todo_list
 end

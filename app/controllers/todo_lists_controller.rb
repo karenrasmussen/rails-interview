@@ -12,4 +12,26 @@ class TodoListsController < ApplicationController
 
     respond_to :html
   end
+
+  def create
+    @todo_list = TodoList.new(todo_params)
+
+    if @todo_list.save
+      redirect_to @todo_list, notice: 'Todo creado exitosamente.'
+    else
+      render :new
+    end
+  end
+
+  def show
+    @todo_list = TodoList.find(params[:id])
+
+    respond_to :html
+  end
+
+  private
+
+  def todo_params
+    params.require(:todo_list).permit(:name)
+  end
 end
