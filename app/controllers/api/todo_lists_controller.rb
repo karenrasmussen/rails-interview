@@ -1,5 +1,7 @@
 module Api
   class TodoListsController < ApplicationController
+    before_action :get_todo_list, only: [:show, :destroy]
+
     # GET /api/todolists
     def index
       @todo_lists = TodoList.all
@@ -13,8 +15,8 @@ module Api
 
       begin
         @todo_list.save!
-      rescue StandardError => error
-        render json: { message: error.message }
+      rescue => error
+        render_error(error.message)
       end
 
       respond_to :json
@@ -22,24 +24,18 @@ module Api
 
     def show
       begin
-        @todo_list = TodoList.find(params[:id])
-
         respond_to :json
-      rescue ActiveRecord::RecordNotFound => error
-        render json: { message: 'No se encontró el registro' }
-      rescue StandardError => error
-        render json: { message: 'Ocurrió un error' }, status: :unprocessable_entity
+      rescue => error
+        render_error(error.message)
       end
     end
 
     def destroy
       begin
-        @todo_list = TodoList.find(params[:id])
-
         @todo_list.destroy
-        render json: { message: 'Eliminación exitosa' }
-      rescue StandardError => error
-        render json: { error: 'Ocurrió un error durante la eliminación' }, status: :unprocessable_entity
+        render_success('Eliminación exitosa')
+      rescue => error
+        render_error(error.message)
       end
     end
 
@@ -47,6 +43,14 @@ module Api
 
     def todo_params
       params.require(:todo_list).permit(:name)
+    end
+
+    def get_todo_list
+      begin
+        @todo_list = TodoList.find(params[:id])
+      rescue => error
+        render_error(error.message)
+      end
     end
   end
 end

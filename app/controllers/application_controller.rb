@@ -8,6 +8,14 @@ class ApplicationController < ActionController::Base
     raise ActionController::RoutingError.new('Not supported format')
   end
 
+  def render_success(message)
+    render json: { message: message }
+  end
+
+  def render_error(message, status = :unprocessable_entity)
+    render json: { message: message }, status: status
+  end
+
   private
 
   def current_user

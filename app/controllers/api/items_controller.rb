@@ -1,6 +1,6 @@
 module Api
   class ItemsController < ApplicationController
-    before_action :get_todo_list
+    before_action :get_todo_list, only: [:index, :create]
 
     def index
       @items = @todo_list.items
@@ -14,9 +14,9 @@ module Api
       item.save
 
       if item.valid?
-        render json: { message: 'Se creó el item' }
+        render_success('Se creó el item')
       else
-        render json: { message: item.errors.full_messages.join }
+        render_error(item.errors.full_messages.join)
       end
     end
 
@@ -27,8 +27,11 @@ module Api
     end
 
     def get_todo_list
-      todo_list_id = params[:todo_list_id]
-      @todo_list = TodoList.find(todo_list_id)
+      begin
+        @todo_list = TodoList.find(params[:todo_list_id])
+      rescue => error
+        render_error(error.message)
+      end
     end
   end
 end
